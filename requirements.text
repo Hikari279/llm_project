@@ -1,0 +1,14 @@
+certifi==2026.7.22
+charset-normalizer==3.5.2
+gitdb==4.0.12
+GitPython==3.1.60
+idna==3.20
+numpy==2.5.4
+packaging==26.3
+regex==2026.9.29
+requests==2.34.2
+setuptools==83.0.0
+smmap==5.0.3
+tiktoken==0.14.0
+urllib3==2.8.0
+wheel==0.46.3
