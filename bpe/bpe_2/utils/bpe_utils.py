@@ -1,22 +1,25 @@
 from collections import Counter
 
-text = "low lower lowest low lower newer newest newer"
 
-def get_tokens(text):
-    tokens = list(text)
-    return tokens
+# BASIC TRAINING BPE
+def get_token(word):
+    token = list(word)
+    return token
 
 def get_pair(tokens):
     pairs = list(zip(tokens, tokens[1:])) # pairs the tokens[0] with tokens[1], tokens[1] with tokens[2], ...
-    pairs_counts = Counter(pairs) # count of pairs
+    return pairs
 
-    if not pairs_counts:
-        return None
-    
-    best_pair = pairs_counts.most_common(1)[0]
+def get_pairs_count(pairs):
+    pairs_count = Counter(pairs)
+    return pairs_count
+
+def get_best_pair(pairs_count):
+    best_pair = pairs_count.most_common(1)[0]
     pair = best_pair[0]
 
     return pair
+
 
 def merge_pair(tokens, pair):
     new_tokens = []
@@ -33,19 +36,11 @@ def merge_pair(tokens, pair):
 
     return new_tokens
 
-merges = 10
-tokens = get_tokens(text)
-merge_rules = []
+# TOKENIZE BPE
+def tokenize_new_word(word, merge_rules):
+    tokens = get_token(word)
 
-for i in range(merges):
-    pair = get_pair(tokens)
+    for pair in merge_rules:
+        tokens = merge_pair(tokens, tuple(pair))
 
-    if not pair:
-        break
-
-    merge_rules.append(pair)
-    tokens = merge_pair(tokens, pair)
-
-    print(f"Token {i + 1} : {tokens}")
-
-print(merge_rules)
+    return tokens
