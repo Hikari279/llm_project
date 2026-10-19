@@ -44,3 +44,4 @@ def tokenize_new_word(word, merge_rules):
         tokens = merge_pair(tokens, tuple(pair))
 
     return tokens
+
