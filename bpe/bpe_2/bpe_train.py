@@ -1,4 +1,5 @@
 from collections import Counter
+
 from utils.bpe_utils import get_token, get_best_pair, get_pair, get_pairs_count, merge_pair
 
 text = """low lower lowest
@@ -23,7 +24,7 @@ language languages linguistic
 banana bandana banana bandana"""
 
 words = text.split()
-
+print(words)
 
 num_merges = 50
 
@@ -65,23 +66,23 @@ for i in range(num_merges):
     TOKENS.extend(curr_tokens)
     ALL_TOKENS.extend(history_tokens)
 
-    print("="*30)
-    print(f"Cycle : {i + 1}")
-    print(f"Current Best Pair : {best_pair}")
-    print(f"Merges : {TOKENS}")
+    # print("="*30)
+    # print(f"Cycle : {i + 1}")
+    # print(f"Current Best Pair : {best_pair}")
+    # print(f"Merges : {TOKENS}")
 
-ALL_TOKENS = list(dict.fromkeys(ALL_TOKENS))
+VOCABULARY = list(dict.fromkeys(ALL_TOKENS))
 
 print(" ")
 print("="*30)
-print(f"All History Tokens : {ALL_TOKENS}")
+print(f"Vocab : {VOCABULARY}")
 print(f"All Best Pair : {ALL_BEST_PAIR}")
 print("="*30)
 
 
-import json
+# import json
 
-with open("data/merge_rules.json", "w", encoding="utf-8") as f:
-    json.dump(ALL_BEST_PAIR, f)
-with open("data/token_rules.json", "w", encoding="utf-8") as f:
-    json.dump(ALL_TOKENS, f)
+# with open("data/merge_rules.json", "w", encoding="utf-8") as f:
+#     json.dump(ALL_BEST_PAIR, f)
+# with open("data/token_rules.json", "w", encoding="utf-8") as f:
+#     json.dump(ALL_TOKENS, f)
