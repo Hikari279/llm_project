@@ -30,7 +30,10 @@ def build_vocab(corpus, merge_history):
 
     ##comment this block out and run to notice difference
     alphabet = list("abcdefghijklmnopqrstuvwxyz")
-    for char in alphabet:
+    extra_chars =list(" .,!?'-")                      #NEW for special characters
+    special_chars = ["\n", "\t", "\r"]
+    merged_list = alphabet + extra_chars + special_chars
+    for char in merged_list:
         if char in token2id_map:
             continue
         else:
@@ -88,7 +91,7 @@ corpus = [
     ["l", "o", "w", "e", "r"],
 ]
 
-text = "hello"
+text = "lower!"
 
 token2id_map = build_vocab(corpus, merge_history)
 
