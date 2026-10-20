@@ -27,8 +27,10 @@ for word in WORDS:
 for i in range(num_merges):
     PAIRS_COUNT = Counter()
 
+    
     # PAIRS
     for token in TOKENS:
+        print(token)
         pair = get_pair(token)
         PAIRS_COUNT.update(pair)
 
@@ -52,23 +54,23 @@ for i in range(num_merges):
     TOKENS.extend(curr_tokens)
     ALL_TOKENS.extend(history_tokens)
 
-    print("="*30)
-    print(f"Cycle : {i + 1}")
-    print(f"Current Best Pair : {best_pair}")
-    print(f"Merges : {TOKENS}")
+#     print("="*30)
+#     print(f"Cycle : {i + 1}")
+#     print(f"Current Best Pair : {best_pair}")
+#     print(f"Merges : {TOKENS}")
 
 
-VOCABULARY = list(dict.fromkeys(ALL_TOKENS))
+# VOCABULARY = list(dict.fromkeys(ALL_TOKENS))
 
-print(" ")
-print("="*30)
-print(f"All History Tokens : {VOCABULARY}")
-print(f"All Best Pair : {ALL_BEST_PAIR}")
-print("="*30)
+# print(" ")
+# print("="*30)
+# print(f"All History Tokens : {VOCABULARY}")
+# print(f"All Best Pair : {ALL_BEST_PAIR}")
+# print("="*30)
 
-import json
+# import json
 
-with open("data/merge_rules.json", "w", encoding="utf-8") as f:
-    json.dump(ALL_BEST_PAIR, f)
-with open("data/vocabulary.json", "w", encoding="utf-8") as f:
-    json.dump(VOCABULARY, f)
+# with open("data/merge_rules.json", "w", encoding="utf-8") as f:
+#     json.dump(ALL_BEST_PAIR, f)
+# with open("data/vocabulary.json", "w", encoding="utf-8") as f:
+#     json.dump(VOCABULARY, f)

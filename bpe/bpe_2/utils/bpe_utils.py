@@ -2,6 +2,17 @@ from collections import Counter
 import json
 import re
 
+
+
+# BYTE LEVEL HANDLER
+def text_to_byte(text):
+    encoded = list(text.encode("utf-8"))
+    return encoded
+
+def text_to_byte_token(token):
+    token = bytes([token])
+    return token
+    
 # BASIC TRAINING BPE
 def get_token(word):
     token = list(word)
@@ -36,6 +47,7 @@ def merge_pair(tokens, pair):
 
 
     return new_tokens
+
 
 # TOKENIZE BPE
 with open("data/vocabulary.json", "r", encoding="utf-8") as f:
