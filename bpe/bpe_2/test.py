@@ -27,22 +27,22 @@ from utils.bpe_utils import text_to_byte, text_to_byte_token, get_pair, merge_pa
 # new_token = bytes(byte_list)
 # print(new_token)
 
-merge_rules = [
-    (b'a', b'b'),
-    (b'ab', b'c')
-]
+# merge_rules = [
+#     (b'a', b'b'),
+#     (b'ab', b'c')
+# ]
 
-all_rules = []
+# all_rules = []
 
 
-for pair in merge_rules:
+# for pair in merge_rules:
 
-    all_byte_list = []
-    for byte in pair:
-        byte_list = list(byte)
-        all_byte_list.append(byte_list)
+#     all_byte_list = []
+#     for byte in pair:
+#         byte_list = list(byte)
+#         all_byte_list.append(byte_list)
 
-    all_rules.append(all_byte_list)
+#     all_rules.append(all_byte_list)
 
 
 # print(all_rules)
@@ -61,4 +61,28 @@ for pair in merge_rules:
 
 # print(restored_rules)
 
-    
+import re
+
+text = "lower newer, bananá!"
+
+parts = re.findall(r"\s+|[^\w\s]+|\w+", text)
+
+# DICT
+ALL_TOKENS = [] # all token from text --> for vocabulary
+ALL_BYTES = []
+ALL_BEST_PAIR = [] # --> for merge rules
+
+WORDS = [] # only word from text -> temporary
+TOKENS = [] # --> word, temporary
+BYTES = []
+
+num_merges = 3
+
+for part in parts:
+    if re.fullmatch(r"\w+", part):
+        WORDS.append(part)
+    else:
+        for p in part:
+            part = list(text_to_byte(p))
+            print(part)
+            ALL_TOKENS.append(part)

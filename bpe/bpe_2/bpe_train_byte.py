@@ -1,6 +1,6 @@
 import re
 from collections import Counter
-from utils.bpe_utils import get_token, get_best_pair, get_pair, get_pairs_count, merge_pair, text_to_byte, text_to_byte_token
+from utils.bpe_utils import get_token, get_best_pair, get_pair, get_pairs_count, merge_pair, text_to_byte, token_to_byte_token
 
 # Fungsi untuk mengubah struktur list/nested list menjadi tuple agar bisa di-hash
 def ke_tuple(item):
@@ -29,14 +29,11 @@ for part in parts:
     if re.fullmatch(r"\w+", part):
         WORDS.append(part)
     else:
-        for p in part:
-            part = list(text_to_byte(p))
-            # print(part)
-            ALL_TOKENS.append(part)
+        ALL_TOKENS.extend([byte] for byte in text_to_byte(part))
 
 for word in WORDS:
     byte_tokens = [
-        text_to_byte_token(b)
+        token_to_byte_token(b)
         for b in text_to_byte(word)
     ]
     TOKENS.append(byte_tokens)
@@ -97,3 +94,10 @@ print("="*30)
 print(f"All History Tokens : {VOCABULARY}")
 print(f"All Best Pair : {MERGE_RULES}")
 print("="*30)
+
+import json
+
+with open("data/merge_rules.json", "w", encoding="utf-8") as f:
+    json.dump(MERGE_RULES, f)
+with open("data/vocabulary.json", "w", encoding="utf-8") as f:
+    json.dump(VOCABULARY, f)

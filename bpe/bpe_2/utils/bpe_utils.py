@@ -9,10 +9,21 @@ def text_to_byte(text):
     encoded = list(text.encode("utf-8"))
     return encoded
 
-def text_to_byte_token(token):
-    token = bytes([token])
+def token_to_byte_token(byte): # single byte
+    token = bytes([byte])
     return token
-    
+
+def text_to_byte_token(byte):
+    token = bytes(byte)
+    return token
+
+
+def byte_tokens_to_text(byte_tokens):
+    text = b''.join(byte_tokens).decode("utf-8")
+    return text
+
+
+
 # BASIC TRAINING BPE
 def get_token(word):
     token = list(word)
@@ -54,6 +65,11 @@ with open("data/vocabulary.json", "r", encoding="utf-8") as f:
     vocabulary = json.load(f)
 with open("data/merge_rules.json", "r", encoding="utf-8") as f:
     merge_rules = json.load(f)
+
+
+
+# id
+vocabulary = [bytes(token) for token in vocabulary]
 
 # search id based on token
 token_to_id = {
