@@ -1,6 +1,18 @@
 from collections import Counter
+import json
+import re
 
 
+
+# BYTE LEVEL HANDLER
+def text_to_byte(text):
+    encoded = list(text.encode("utf-8"))
+    return encoded
+
+def text_to_byte_token(token):
+    token = bytes([token])
+    return token
+    
 # BASIC TRAINING BPE
 def get_token(word):
     token = list(word)
@@ -36,7 +48,25 @@ def merge_pair(tokens, pair):
 
     return new_tokens
 
+
 # TOKENIZE BPE
+with open("data/vocabulary.json", "r", encoding="utf-8") as f:
+    vocabulary = json.load(f)
+with open("data/merge_rules.json", "r", encoding="utf-8") as f:
+    merge_rules = json.load(f)
+
+# search id based on token
+token_to_id = {
+    token: idx
+    for idx, token in enumerate(vocabulary)
+}
+
+# search token based on id
+id_to_token = {
+    idx: token
+    for idx, token in enumerate(vocabulary)
+}
+
 def tokenize_new_word(word, merge_rules):
     tokens = get_token(word)
 
@@ -45,3 +75,45 @@ def tokenize_new_word(word, merge_rules):
 
     return tokens
 
+def encode(token):
+    return token_to_id[token]
+
+def decode(ids):
+    return id_to_token[ids]
+
+def token_to_word(decoded):
+    return "".join(decoded)
+
+
+
+# WHITESPACE, PUNCTUATION, AND LONGER TEXT HANDLER
+import re
+
+def tokenize_text(text, merge_rules):
+
+    pattern = r"\s+|[^\w\s]+|\w+"
+    parts = re.findall(pattern, text)
+
+    IDS = []
+    TOKENS = []
+    
+
+    for part in parts:
+        if re.fullmatch(r"\w+", part):
+            tokens = tokenize_new_word(part, merge_rules)
+            for token in tokens:
+                TOKENS.append(token)
+                id = encode(token)
+                IDS.append(id)
+
+        else:
+            TOKENS.append(part)
+            token_id = encode(part)
+            IDS.append(token_id)
+
+    return TOKENS, IDS
+
+def token_to_text(IDS):
+    DECODED = [decode(idx) for idx in IDS]
+    text = token_to_word(DECODED)
+    return DECODED, text
