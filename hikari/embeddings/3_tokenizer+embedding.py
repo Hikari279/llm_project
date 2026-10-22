@@ -1,4 +1,4 @@
-from utils.bpe_functions import tokenize_bytes, encode, build_vocab, merge_rules
+from hikari.embeddings.utils.bpe_functions import tokenize_bytes, encode, build_vocab, merge_rules
 import numpy as np
 
 #note: these vectors are still random. self-attention will fill values later.
