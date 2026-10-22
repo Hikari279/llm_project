@@ -1,0 +1,13 @@
+I'm currently learning to build a BPE tokenizer and embedding to understand how GPT works from the ground up. The tokenizer converts text into ID tokens, while the embedding converts ID tokens into a vector representation of numbers.
+
+During the learning process, I wrote Python code to count adjacent byte pairs, select the most frequently occurring pairs, and then merge them into a new token. This process is repeated until a predetermined number of merges is reached.
+
+BPE doesn't understand word meaning like humans do. It simply learns the patterns of token pairs that frequently appear in the training data. Therefore, frequently occurring words can form longer tokens, while infrequent words can be represented by several smaller tokens.
+
+For example, the words "learn" and "learn again" share some common character patterns. If these patterns occur frequently enough, the merge process can create tokens that are reused in subsequent occurrences.
+
+I also want to test text with spaces, punctuation, capital letters, numbers, and Unicode characters like é and 😀. This way, I can test whether the tokenizer can convert the text to bytes, apply merge rules, and return the bytes to their original text.
+
+Once the tokenizer is trained, I will use the same vocabulary and merge rules to convert the text into ID tokens. These ID tokens will be used to derive token embeddings. Next, positional embeddings are added so that each token's representation also carries information about its position in the text sequence.
+
+The goal of this experiment is to generate combined embeddings that have one row of vectors for each token in the input, before the representation is passed on to the next stage of GPT processing.
