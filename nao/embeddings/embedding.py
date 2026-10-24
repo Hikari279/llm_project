@@ -26,28 +26,28 @@ with vocabulary_path.open("r", encoding="utf-8") as f:
 text = "I'm Learn BPE NOW! 😀"
 
 IDS = tokenize_text(text)
-print(IDS)
+
 
 vocab_size = len(vocabulary)
 embedding_dim = 8
 max_sequence_length = 128
 
 
-token_ids = len(IDS)
-
 # CREATE MATRIX
 embedding_table = np.random.randn(vocab_size, embedding_dim)
 positional_embedding = np.random.randn(max_sequence_length, embedding_dim)
 
-print(IDS)
 
+# COMBINE TOKEN AND POSITIONAL EMBEDDINGS
+token_ids = [token_id for token_group in IDS for token_id in token_group]
 
-# COMBINED based n IDS
+if len(token_ids) > max_sequence_length:
+    raise ValueError(
+        f"Token sequence length ({len(token_ids)}) exceeds "
+        f"max_sequence_length ({max_sequence_length})."
+    )
 
-COMBINED = []
-for token_ids in IDS:
-    sequence_embedding = embedding_table[token_ids]
-    combined_embeddings = sequence_embedding + positional_embedding[:len(sequence_embedding)]
-    COMBINED.append(combined_embeddings)
+token_embeddings = embedding_table[token_ids]
+position_embeddings = positional_embedding[:len(token_ids)]
 
-print(COMBINED)
+COMBINED = token_embeddings + position_embeddings

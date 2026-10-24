@@ -7,22 +7,28 @@ import re
 # TRAINING BPE
 def train_text(text, num_merges):
     parts = re.findall(r"\s+|[^\w\s]+|\w+", text)
+    # "This is text!" -> ["This", " ", "is", " ", "text", "!"].
+
     # DICT
     ALL_TOKENS = [] # all token from text --> for vocabulary
-    ALL_BYTES = []
     ALL_BEST_PAIR = [] # --> for merge rules
 
     WORDS = [] # only word from text -> temporary
     TOKENS = [] # --> word, temporary
-    BYTES = []
 
     # LOOPING MERGE
+
+    # "This" -> WORDS
+    # " " and "!" -> [32] and [33] -> ALL_TOKENS.
     for part in parts:
         if re.fullmatch(r"\w+", part):
             WORDS.append(part)
         else:
             ALL_TOKENS.extend([byte] for byte in text_to_byte(part))
+            
 
+    # WORDS ["This", ...] -> TOKENS [[b"T", b"h", ...], ...];
+    # the same word bytes enter ALL_TOKENS as integer lists such as [84], [104], ...
     for word in WORDS:
         byte_tokens = [
             token_to_byte_token(b)
@@ -35,6 +41,7 @@ def train_text(text, num_merges):
         PAIRS_COUNT = Counter()
 
         # PAIRS
+        # [b"T", b"h", b"i", b"s"] -> adjacent pairs; counts are combined across words.
         for tokens in TOKENS:
 
             pair = get_pair(tokens)
@@ -46,6 +53,7 @@ def train_text(text, num_merges):
 
 
         # MERGES
+        # first cycle: (b"i", b"s") -> b"is"; the merged tokens replace the old word tokens.
         curr_tokens = []
         history_tokens = []
         for tokens in TOKENS:
@@ -64,11 +72,13 @@ def train_text(text, num_merges):
         print(f"Merges : {[[list(token) for token in word_tokens] for word_tokens in TOKENS]}")
 
     # SET VOCAB
+    # the 256 single-byte tokens [0] through [255] are added as fallback vocabulary entries.
     default_tokens = []
     for i in range(256):
         default_tokens.append([i])
 
     # DEDUPLICATE VOCABULARY
+    # repeated entries like [32] are kept only once in VOCABULARY.
     ALL_TOKENS.extend(default_tokens)
 
     dilihat = set()
@@ -81,6 +91,7 @@ def train_text(text, num_merges):
 
 
     # MERGE_RULES
+    # the first pair (b"i", b"s") becomes [[105], [115]].
     MERGE_RULES = []
     for pair in ALL_BEST_PAIR:
         all_byte_list = []
@@ -107,4 +118,3 @@ def get_vocab(text, num_merges):
 
 def get_merge_rules(text, num_merges):
     return train_text(text, num_merges)[1]
-
