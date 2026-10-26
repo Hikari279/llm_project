@@ -26,7 +26,7 @@ with vocabulary_path.open("r", encoding="utf-8") as f:
 text = "I'm Learn BPE NOW! 😀"
 
 IDS = tokenize_text(text)
-
+# print(IDS) 
 
 vocab_size = len(vocabulary)
 embedding_dim = 8

@@ -42,7 +42,7 @@ W_O = np.random.randn(embedding_dim, embedding_dim)
 Y = attention_output @ W_O
 
 
-print(Y.shape == COMBINED.shape)
-print(np.allclose(attention_weights.sum(axis=1), 1.0))
-print(np.allclose(attention_weights[causal_mask], 0.0))
-print(np.isfinite(Y).all())
+# print(Y.shape == COMBINED.shape)
+# print(np.allclose(attention_weights.sum(axis=1), 1.0))
+# print(np.allclose(attention_weights[causal_mask], 0.0))
+# print(np.isfinite(Y).all())
