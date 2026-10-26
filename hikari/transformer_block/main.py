@@ -2,9 +2,12 @@ import numpy as np
 
 from utils.bpe_functions import tokenize_bytes, build_vocab, encode
 from transformer_block_class import TransformerBlock
+from layerNorm_backward_gradient import layer_norm_backward
 
 merge_rules = [(b'a', b't'), (b'h', b'e'), (b'he', b' '), (b'at', b' '), (b'T', b'he ')]
 
+# Optional: makes initialization reproducible
+np.random.seed(42)
 
 # =========================
 # 1. SETUP — RUN ONCE
@@ -39,7 +42,6 @@ beta_final = np.zeros(embedding_dim)
 # Language-model head — initialize only once
 W_vocab = np.random.randn(embedding_dim, vocab_size) * 0.1
 
-
 # =========================
 # 2. FORWARD PASS
 # =========================
@@ -56,14 +58,42 @@ def forward_pass(input_ids, target_ids):
 
     logits = gpt_output @ W_vocab
     probs = block1.softmax(logits)
+    
+    #gradient
+    errors = probs.copy()
+    errors[np.arange(len(target_ids)), target_ids] -= 1
+    N = len(target_ids)
+    grad_W_vocab = gpt_output.T @ errors / N
+    grad_gpt_output = errors @ W_vocab.T
 
+    grad_output2, grad_gamma_final, grad_beta_final = layer_norm_backward(
+    grad_gpt_output,
+    output2,
+    gamma_final)
+
+    #loss
     correct_probs = probs[np.arange(len(target_ids)), target_ids]
     loss = -np.mean(np.log(correct_probs))
-    return loss
+
+    return loss, grad_W_vocab, probs
 
 
-loss1 = forward_pass(input_ids, target_ids)
-loss2 = forward_pass(input_ids, target_ids)
+loss, grad_W_vocab, probs = forward_pass(input_ids, target_ids)
 
-print("Loss 1:", loss1)
-print("Loss 2:", loss2)
+
+
+learning_rate = 0.1
+for i in range(5):
+    loss_before, grad_W_vocab, _ = forward_pass(input_ids, target_ids)
+    W_vocab -= learning_rate * grad_W_vocab
+    loss_after, _, _ = forward_pass(input_ids, target_ids)
+    print(f"Loop {i}: {loss_before:.4f} -> {loss_after:.4f}")
+
+
+current_loss, _, probs = forward_pass(input_ids, target_ids)
+prob_after = probs[-1, 99]
+print("prob after:", prob_after)
+
+value = target_ids[-1]
+print(value)
+
