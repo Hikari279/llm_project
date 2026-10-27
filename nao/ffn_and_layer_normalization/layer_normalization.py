@@ -9,19 +9,21 @@ if str(nao_dir) not in sys.path:
     sys.path.insert(0, str(nao_dir))
 
 from embeddings.embedding import embedding_dim
-from ffn_and_layer_normalization.ffn import Y_FFN
 
-gamma = np.ones(embedding_dim)
-beta = np.zeros(embedding_dim)
+def layer_norm(X):
+    gamma = np.ones(embedding_dim)
+    beta = np.zeros(embedding_dim)
 
-mean = np.mean(Y_FFN, axis=1, keepdims=True)
-diff = Y_FFN - mean
-variance = np.mean(np.square(diff), axis=1, keepdims=True)
-epsilon = 1e-5
+    mean = np.mean(X, axis=1, keepdims=True)
+    diff = X - mean
+    variance = np.mean(np.square(diff), axis=1, keepdims=True)
+    epsilon = 1e-5
 
 
-norm = diff / np.sqrt(variance + epsilon)
-Y_LN = gamma * norm + beta
+    norm = diff / np.sqrt(variance + epsilon)
+    Y_LN = gamma * norm + beta
+
+    return Y_LN
 
 # print("Input shape:", Y_FFN.shape)
 # print("Output shape:", Y_LN.shape)

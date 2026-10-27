@@ -7,30 +7,29 @@ nao_dir = Path(__file__).resolve().parents[1]
 if str(nao_dir) not in sys.path:
     sys.path.insert(0, str(nao_dir))
 
-from self_attention.self_attention import Y
 from embeddings.embedding import embedding_dim
 
 
 d_ff = 32
 
 
-# TRANSFORMATION 1
-W1 = np.random.randn(embedding_dim, d_ff)
-b1 = np.random.randn(d_ff)
+def ffn(Z, d_ff):
+    # TRANSFORMATION 1
+    W1 = np.random.randn(embedding_dim, d_ff)
+    b1 = np.random.randn(d_ff)
 
-H = Y @ W1 + b1
+    H = Z @ W1 + b1
 
+    # ReLU
+    A = np.maximum(H, 0)
 
-# ReLU
-A = np.maximum(H, 0)
+    # TRANSFORMATION 2
+    W2 = np.random.randn(d_ff, embedding_dim)
+    b2 = np.random.randn(embedding_dim)
 
+    Y_FFN = A @ W2 + b2
 
-
-# TRANSFORMATION 2
-W2 = np.random.randn(d_ff, embedding_dim)
-b2 = np.random.randn(embedding_dim)
-
-Y_FFN = A @ W2 + b2
+    return Y_FFN
 
 
 # print("Output shape:", Y_FFN.shape)
