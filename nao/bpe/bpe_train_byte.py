@@ -6,7 +6,7 @@ from utils.train_utils import get_vocab, get_merge_rules
 
 
 # ========================== MAIN CODE ================================
-num_merges = 100
+num_merges = 300
 data_dir = Path(__file__).resolve().parent / "data"
 text_path = data_dir / "text_train.txt"
 with text_path.open("r", encoding="utf-8") as file:
@@ -15,8 +15,6 @@ with text_path.open("r", encoding="utf-8") as file:
 VOCABULARY = get_vocab(text, num_merges)
 MERGE_RULES = get_merge_rules(text, num_merges)
 
-print(VOCABULARY)
-print(MERGE_RULES)
 
 import json
 

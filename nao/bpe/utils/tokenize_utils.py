@@ -1,4 +1,3 @@
-from collections import Counter
 import json
 from pathlib import Path
 import re
@@ -17,8 +16,8 @@ with (data_dir / "merge_rules.json").open("r", encoding="utf-8") as f:
     merge_rules = json.load(f)
 
 
-
 # id
+# JSON token [84, 104] -> bytes token b"Th".
 vocabulary = [bytes(token) for token in vocabulary]
 
 # search id based on token
@@ -39,13 +38,15 @@ def tokenize_text(text):
 
     # SPLIT
     parts = re.findall(r"\s+|[^\w\s]+|\w+", text)
-
+    # "This is text!" -> ["This", " ", "is", " ", "text", "!"].
 
 
     BYTES = []
     TOKENS = []
 
     # GET TOKENS [byte_tokens] FROM PARTS (TEXT)
+    # "This": part_bytes -> [[84], [104], [105], [115]];
+    # byte_tokens -> [b"T", b"h", b"i", b"s"].
     for part in parts:
         part_bytes = [text_to_byte(p) for p in part]
         byte_tokens = [
@@ -57,6 +58,10 @@ def tokenize_text(text):
         BYTES.append(part_bytes)
         TOKENS.append(byte_tokens)
 
+    # BYTES[0] = [[84], [104], ...]
+    # TOKENS[0] = [b"T", b"h", ...].
+    # BYTES holds integer-byte groups
+    # TOKENS holds the equivalent bytes objects.
 
     # print(BYTES)
     # print(TOKENS)
@@ -64,6 +69,7 @@ def tokenize_text(text):
     MERGE_RULES = []
 
     # TRANFORM MERGE_RULES FORMAT [int, int] -> [byte_tokens, byte_tokens]
+    # [[105], [115]] -> (b"i", b"s").
     for pair in merge_rules:
         pair_token = []
         for byte in pair:
@@ -74,6 +80,8 @@ def tokenize_text(text):
 
 
     # PAIR THE TOKENS [byte_tokens]
+    # [b"T", b"h", b"i", b"s"] -> [b"This"];
+    # ALL_TOKENS keeps one merged token list per part, including spaces and punctuation.
     ALL_TOKENS = []
     for tokens in TOKENS:
         curr_tokens = list(tokens)
@@ -85,6 +93,8 @@ def tokenize_text(text):
 
 
     # TRANFORM ALL_TOKENS [byte_tokens] -> [int]
+    # [b"This"] -> [index_of_b"This"]; IDS stays grouped per input part.
+    # With the currently loaded vocabulary, "This is text!" -> [[11], [0], [9], [0], [6, 7, 8, 6], [1]].
     IDS = []
     for tokens in ALL_TOKENS:
         ids = [token_to_id[token] for token in tokens]

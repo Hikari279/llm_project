@@ -29,7 +29,7 @@ def get_token(word):
     return token
 
 def get_pair(tokens):
-    pairs = list(zip(tokens, tokens[1:])) # pairs the tokens[0] with tokens[1], tokens[1] with tokens[2], ...
+    pairs = list(zip(tokens, tokens[1:]))
     return pairs
 
 def get_pairs_count(pairs):
