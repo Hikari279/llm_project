@@ -6,7 +6,7 @@ from utils.train_utils import get_vocab, get_merge_rules
 
 
 # ========================== MAIN CODE ================================
-num_merges = 3
+num_merges = 300
 data_dir = Path(__file__).resolve().parent / "data"
 text_path = data_dir / "text_train.txt"
 with text_path.open("r", encoding="utf-8") as file:

@@ -1,1 +1,61 @@
-This is text!
+Pada suatu pagi, sebuah kota kecil mulai terbangun. Matahari perlahan muncul dari balik gedung, sementara suara kendaraan mulai memenuhi jalanan. Di sebuah kedai kopi, seorang pemuda bernama Arka sedang duduk sambil membuka laptopnya. Ia memiliki satu tujuan: membuat mesin sederhana yang mampu memahami pola bahasa manusia.
+
+Arka percaya bahwa komputer tidak harus langsung memahami seluruh dunia untuk bisa mempelajari sesuatu. Ia hanya perlu mengenali pola-pola kecil terlebih dahulu. Misalnya, kata "belajar" terdiri dari beberapa karakter, kalimat memiliki susunan kata, dan sebuah paragraf dapat menyampaikan gagasan yang saling berhubungan.
+
+"Kalau manusia belajar dari pengalaman, bagaimana dengan mesin?" pikir Arka.
+
+Ia mulai menulis program Python pertamanya. Baris demi baris kode muncul di layar. Program tersebut mengubah teks menjadi potongan-potongan kecil yang disebut token. Setiap token kemudian dipetakan menjadi sebuah angka atau token ID. Kata yang sama dapat menghasilkan ID yang sama, selama aturan tokenisasi dan vocabulary yang digunakan tidak berubah.
+
+Namun, angka saja belum cukup. Model membutuhkan representasi numerik yang dapat dipelajari. Karena itu, setiap token ID digunakan untuk mengambil sebuah vektor dari embedding table. Sebuah token mungkin direpresentasikan oleh delapan angka, seperti [0.12, -0.45, 0.87, 0.03, 0.51, -0.22, 0.64, 0.19]. Angka-angka tersebut tidak memiliki makna khusus sejak awal. Model harus belajar menyesuaikan nilainya selama proses training.
+
+Arka kemudian menemukan masalah lain. Kalimat "kucing mengejar tikus" tidak sama dengan "tikus mengejar kucing", meskipun kedua kalimat menggunakan kata-kata yang sama. Urutan token ternyata penting! Untuk membantu model membedakan posisi setiap token, ia menambahkan positional embedding pada token embedding.
+
+Setelah itu, rangkaian vektor dimasukkan ke dalam transformer. Di dalam self-attention, setiap token dapat mempertimbangkan informasi dari token-token sebelumnya. Mekanisme ini membantu model menangkap hubungan antarkata, bukan sekadar memproses setiap kata secara terpisah.
+
+Contohnya, perhatikan kalimat berikut:
+
+"Rina meletakkan buku di atas meja karena benda itu terlalu berat untuk dibawa."
+
+Ketika memproses kata "benda", model perlu memanfaatkan konteks di sekitarnya untuk mempelajari kemungkinan rujukannya. Hubungan seperti ini bukan sesuatu yang diprogram secara khusus untuk setiap kalimat. Transformer menyediakan mekanisme agar model dapat mempelajari pola hubungan tersebut dari data.
+
+Di dalam transformer block, informasi melewati beberapa tahapan. Self-attention menggabungkan informasi kontekstual, lalu feed-forward network mengolah representasi setiap posisi lebih lanjut. Residual connection membantu mempertahankan informasi dari tahap sebelumnya, sedangkan layer normalization membantu menjaga skala aktivasi tetap terkendali.
+
+Tentu saja, model Arka belum pintar. Pada percobaan pertama, hampir seluruh bobotnya diinisialisasi dengan nilai acak. Ketika diminta melanjutkan kalimat "Hari ini cuaca", model mungkin menghasilkan prediksi yang tidak masuk akal. Bahkan, ia bisa saja memberikan probabilitas tinggi pada token yang sama sekali tidak cocok dengan konteks.
+
+Arka tidak langsung mengubah semua angka secara manual. Ia terlebih dahulu membandingkan prediksi model dengan target yang seharusnya diprediksi. Dari perbandingan tersebut, ia menghitung loss, yaitu ukuran seberapa buruk prediksi model berdasarkan tujuan training yang digunakan.
+
+Misalkan konteks input adalah "burung itu sedang", sedangkan token target berikutnya adalah "terbang". Model menghasilkan probabilitas seperti berikut:
+
+- "terbang": 0.10
+- "makan": 0.35
+- "tidur": 0.20
+- "berjalan": 0.25
+- Token lainnya: 0.10
+
+Probabilitas untuk "terbang" masih rendah. Artinya, model belum memberikan prediksi yang cukup baik untuk contoh tersebut. Melalui loss dan backpropagation, model dapat menghitung bagaimana perubahan parameter memengaruhi kesalahan prediksi. Gradient kemudian digunakan oleh optimizer untuk memperbarui bobot model secara bertahap.
+
+Pada setiap langkah training, model memproses input, menghasilkan prediksi, menghitung loss, menghitung gradient, lalu memperbarui parameter. Proses ini diulang berkali-kali menggunakan banyak contoh. Jika semuanya berjalan dengan baik, model perlahan-lahan dapat mempelajari pola yang berguna dari data training.
+
+Akan tetapi, Arka juga menyadari bahwa menghafal teks bukan tujuan yang sama dengan memahami pola secara umum. Jika seluruh data training hanya berisi kalimat "kucing makan ikan", model mungkin terlalu sering memprediksi kombinasi kata yang sama. Karena itu, ia menambahkan contoh yang lebih bervariasi.
+
+Ada kucing yang tidur di kursi. Ada anjing yang berlari di taman. Seekor burung terbang melewati jendela, sementara ikan kecil berenang di dalam kolam. Pada malam hari, hujan turun dengan deras dan lampu-lampu rumah mulai menyala. Setiap contoh memberikan pola bahasa yang sedikit berbeda.
+
+Kadang-kadang, Arka juga memasukkan angka dan simbol ke dalam data: tahun 2026, suhu 29.5 derajat, persamaan 12 + 8 = 20, serta pertanyaan sederhana seperti "Mengapa langit terlihat biru?" Ia ingin melihat bagaimana tokenizer membagi tanda baca, angka, spasi, dan karakter yang tidak biasa.
+
+Suatu hari, programnya menerima kalimat berikut:
+
+"Hello, dunia! 🌍 Python itu menyenangkan; 2 + 3 = 5."
+
+Tokenizer mengubah teks menjadi token, vocabulary memetakan token menjadi ID, embedding mengubah ID menjadi vektor, dan positional embedding memberikan informasi posisi. Transformer kemudian mengolah urutan vektor tersebut untuk menghasilkan representasi kontekstual. Pada tahap berikutnya, model menggunakan representasi itu untuk memperkirakan token yang mungkin muncul selanjutnya.
+
+Arka akhirnya memahami bahwa sebuah mini language model bukanlah satu fungsi ajaib. Ia merupakan rangkaian proses yang saling terhubung. Tokenizer menentukan bagaimana teks dipecah, embedding menyediakan representasi numerik, transformer mengolah konteks, dan training menyesuaikan parameter berdasarkan kesalahan prediksi.
+
+Perjalanan itu masih panjang. Modelnya belum mampu menjawab semua pertanyaan, belum selalu menghasilkan kalimat yang masuk akal, dan terkadang masih mengulang kata-kata yang sama. Namun, setiap eksperimen memberinya petunjuk baru.
+
+"Pelan-pelan saja," katanya sambil tersenyum. "Yang penting, aku tahu bagaimana setiap bagian bekerja."
+
+Malam semakin larut. Arka menyimpan programnya, mencatat hasil eksperimen, lalu menyiapkan dataset baru untuk percobaan berikutnya. Di layar laptopnya, satu kalimat terakhir muncul:
+
+"Mesin belajar dari contoh, tetapi manusia belajar dengan memahami proses di baliknya."
+
+Dan begitulah, satu langkah kecil dalam perjalanan membangun bahasa buatan berakhir untuk hari itu. 🚀

@@ -1,24 +1,9 @@
-# DIRECTORY SETTING
-import sys
-from pathlib import Path
-
 import numpy as np
 
 
-nao_dir = Path(__file__).resolve().parents[1]
-
-if str(nao_dir) not in sys.path:
-    sys.path.insert(0, str(nao_dir))
-
-from embeddings.embedding import embedding_dim
-
-def self_attention(X_norm):
+def self_attention(X_norm, embedding_dim, W_Q, W_K, W_V):
     t = X_norm.shape[0]
 
-
-    W_Q = np.random.randn(embedding_dim, embedding_dim)
-    W_K = np.random.randn(embedding_dim, embedding_dim)
-    W_V = np.random.randn(embedding_dim, embedding_dim)
 
     Q = X_norm @ W_Q
     K = X_norm @ W_K

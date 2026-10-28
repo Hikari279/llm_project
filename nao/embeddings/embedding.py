@@ -23,7 +23,7 @@ with vocabulary_path.open("r", encoding="utf-8") as f:
     
 # GET IDS
 
-text = "I'm Learn BPE NOW! 😀"
+text = "Aku belajar BPE sekarang! 😀"
 
 IDS = tokenize_text(text)
 # print(IDS) 

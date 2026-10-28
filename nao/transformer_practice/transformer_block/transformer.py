@@ -8,9 +8,9 @@ if str(nao_dir) not in sys.path:
     sys.path.insert(0, str(nao_dir))
 
 from embeddings.embedding import COMBINED, embedding_dim
-from ffn_and_layer_normalization.layer_normalization import layer_norm
-from ffn_and_layer_normalization.ffn import ffn
-from self_attention.self_attention import self_attention
+from transformer_practice.ffn_and_layer_normalization.layer_normalization import layer_norm
+from transformer_practice.ffn_and_layer_normalization.ffn import ffn
+from transformer_practice.self_attention.self_attention import self_attention
 
 # Input
 X = COMBINED

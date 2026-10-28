@@ -101,11 +101,11 @@ def train_text(text, num_merges):
         MERGE_RULES.append(all_byte_list)
 
 
-    print(" ")
-    print("="*30)
-    print(f"All History Tokens : {VOCABULARY}")
-    print(f"All Best Pair : {MERGE_RULES}")
-    print("="*30)
+    # print(" ")
+    # print("="*30)
+    # print(f"All History Tokens : {VOCABULARY}")
+    # print(f"All Best Pair : {MERGE_RULES}")
+    # print("="*30)
 
     print()
     return VOCABULARY, MERGE_RULES

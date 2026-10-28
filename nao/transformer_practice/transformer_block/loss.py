@@ -11,7 +11,7 @@ if str(nao_dir) not in sys.path:
     sys.path.insert(0, str(nao_dir))
 
 from embeddings.embedding import embedding_dim
-from transformer_block.transformer import output
+from transformer_practice.transformer_block.transformer import output
 
 vocabulary_path = nao_dir / "bpe" / "data" / "vocabulary.json"
 
@@ -21,14 +21,14 @@ with vocabulary_path.open("r", encoding="utf-8") as f:
 vocab_size = len(vocabulary)
 
 
+W_vocab = np.random.randn(embedding_dim, vocab_size)
 
-def logits(embedding_dim, vocab_size, transformer_output):
-    W_vocab = np.random.randn(embedding_dim, vocab_size)
+def logits(transformer_output):
     logits = transformer_output @ W_vocab
 
     return logits
 
-logits = logits(embedding_dim, vocab_size, output)
+logits = logits(output)
 
 
 
@@ -44,9 +44,6 @@ def probs(logits):
 
     return probs_matrix, predicted_ids
 
-probs_matrix = probs(logits)[0]
-
-from embeddings.embedding import token_ids
 
 def loss(probs_matrix, token_ids):
     target_ids = token_ids
@@ -54,14 +51,11 @@ def loss(probs_matrix, token_ids):
     rows = np.arange(len(target_ids))
     correct_probs = probs_matrix[rows, target_ids]
 
-    print("Target probs: ", correct_probs)
 
     losses = -np.log(correct_probs)
     loss = np.mean(losses)
 
     return loss
-
-loss = loss(probs_matrix, token_ids)
 
 
     
