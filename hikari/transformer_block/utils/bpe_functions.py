@@ -35,37 +35,43 @@ def select_highest_count(dictionary):
     selected_pair = max(dictionary, key=dictionary.get)
     return selected_pair
 
-def bpe_cycle(byte_corpus, iterations, merge_rules):
+def bpe_cycle(byte_corpus, iterations, merge_rules, verbose=False):
     if iterations <= 0:
         return byte_corpus, merge_rules
-    
-    print("cycle: ", iterations)
 
     shared_dictionary = {}
+
     for sublist in byte_corpus:
         count_result = count_pairs(sublist)
+
         for pair, count in count_result.items():
-            if pair in shared_dictionary:
-                shared_dictionary[pair] += count
-            else:
-                shared_dictionary[pair] = count
-                
+            shared_dictionary[pair] = (
+                shared_dictionary.get(pair, 0) + count
+            )
 
     selected_pair = select_highest_count(shared_dictionary)
+
     if selected_pair is None:
         return byte_corpus, merge_rules
-    
+
     merge_rules.append(selected_pair)
-    print("merges: ", merge_rules)
 
-    new_corpus = []
-    for sublist in byte_corpus:
-        word = merge(sublist, selected_pair)
-        new_corpus.append(word)
+    new_corpus = [
+        merge(sublist, selected_pair)
+        for sublist in byte_corpus
+    ]
 
-    print("result:", new_corpus)
+    if verbose:
+        print("Cycle:", iterations)
+        print("Selected pair:", selected_pair)
+        print("Corpus after merge:", new_corpus)
 
-    return bpe_cycle(new_corpus, iterations -1, merge_rules)
+    return bpe_cycle(
+        new_corpus,
+        iterations - 1,
+        merge_rules,
+        verbose
+    )
 
 def build_vocab(merge_rules):
     byte_vocab = {}
@@ -135,4 +141,55 @@ inverted_map = {
 }
 """
 
+import json
+def save_merge_rules(merge_rules, filename="hikari/transformer_block/utils/merge_rules.json"):
+    # Convert each bytes pair into JSON-compatible hex strings
+    rules_as_hex = [
+        [left.hex(), right.hex()]
+        for left, right in merge_rules
+    ]
 
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(rules_as_hex, file)
+
+    print(f"Merge rules saved to {filename}")
+
+def load_merge_rules(filename="hikari/transformer_block/utils/merge_rules.json"):
+    with open(filename, "r", encoding="utf-8") as file:
+        rules_as_hex = json.load(file)
+
+    merge_rules = [
+        (bytes.fromhex(left), bytes.fromhex(right))
+        for left, right in rules_as_hex
+    ]
+
+    print(f"Merge rules loaded from {filename}")
+
+    return merge_rules 
+
+"""
+from training_sample import training_sentences
+# Turn every sentence into individual UTF-8 byte tokens
+new_byte_corpus = [
+    [bytes([b]) for b in sentence.encode("utf-8")]
+    for sentence in training_sentences
+]
+
+# Start from an empty merge history
+new_merge_rules = []
+
+trained_byte_corpus, new_merge_rules = bpe_cycle(
+    new_byte_corpus,
+    iterations=50,
+    merge_rules=new_merge_rules,
+    verbose=False
+)
+
+save_merge_rules(new_merge_rules)
+
+
+loaded_merge_rules = load_merge_rules()
+
+print("Same rules:", loaded_merge_rules == new_merge_rules)
+print("Number of rules:", len(loaded_merge_rules))
+"""
