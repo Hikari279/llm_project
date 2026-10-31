@@ -1,24 +1,29 @@
 import re
 from collections import Counter
 from pathlib import Path
+import sys
+
+# Import configuration
+nao_dir = Path(__file__).resolve().parents[1]
+if str(nao_dir) not in sys.path:
+    sys.path.insert(0, str(nao_dir))
+
+from config import NUM_MERGES, TRAINING_TEXT_PATH, VOCABULARY_PATH, MERGE_RULES_PATH
 from utils.train_utils import get_vocab, get_merge_rules
 
 
 
 # ========================== MAIN CODE ================================
-num_merges = 300
-data_dir = Path(__file__).resolve().parent / "data"
-text_path = data_dir / "text_train.txt"
-with text_path.open("r", encoding="utf-8") as file:
+with TRAINING_TEXT_PATH.open("r", encoding="utf-8") as file:
     text = file.read()
 
-VOCABULARY = get_vocab(text, num_merges)
-MERGE_RULES = get_merge_rules(text, num_merges)
+VOCABULARY = get_vocab(text, NUM_MERGES)
+MERGE_RULES = get_merge_rules(text, NUM_MERGES)
 
 
 import json
 
-with (data_dir / "merge_rules.json").open("w", encoding="utf-8") as f:
+with MERGE_RULES_PATH.open("w", encoding="utf-8") as f:
     json.dump(MERGE_RULES, f)
-with (data_dir / "vocabulary.json").open("w", encoding="utf-8") as f:
+with VOCABULARY_PATH.open("w", encoding="utf-8") as f:
     json.dump(VOCABULARY, f)

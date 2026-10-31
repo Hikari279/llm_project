@@ -22,8 +22,68 @@ def self_attention(X_norm, W_Q, W_K, W_V, W_O):
 
     attention_weights = exp_scores / sum_exp
 
-    attention_output = attention_weights @ V
+    C = attention_weights @ V
     
-    attention_output = attention_output @ W_O
+    attention_output = C @ W_O
 
-    return attention_output
+    cache = {
+        "X_norm": X_norm,
+        "Q": Q,
+        "K": K,
+        "V": V,
+        "attention_weights": attention_weights,
+        "C": C,
+        "causal_mask": causal_mask
+    }
+
+    return attention_output, cache
+
+def self_attention_backward(
+    dAttention_output, cache,
+    W_Q, W_K, W_V, W_O
+):
+    X_norm = cache["X_norm"]
+    Q = cache["Q"]
+    K = cache["K"]
+    V = cache["V"]
+    A = cache["attention_weights"]
+    C = cache["C"]
+    causal_mask = cache["causal_mask"]
+
+    d_k = K.shape[1]
+
+    # 1. Output projection: attention_output = C @ W_O
+    dW_O = C.T @ dAttention_output
+    dC = dAttention_output @ W_O.T
+
+    # 2. Context: C = A @ V
+    dA = dC @ V.T
+    dV = A.T @ dC
+
+    # 3. Backpropagation through softmax
+    dScores = A * (
+        dA - np.sum(dA * A, axis=1, keepdims=True)
+    )
+
+    # Causal mask: future positions cannot receive gradients
+    dScores[causal_mask] = 0
+
+    # 4. Backpropagation through scaled scores
+    dScaledScores = dScores / np.sqrt(d_k)
+
+    dQ = dScaledScores @ K
+    dK = dScaledScores.T @ Q
+
+    # 5. Gradients for Q, K, V projections
+    dW_Q = X_norm.T @ dQ
+    dW_K = X_norm.T @ dK
+    dW_V = X_norm.T @ dV
+
+    # 6. Gradient flowing back to LayerNorm 1
+    dX_norm = (
+        dQ @ W_Q.T
+        + dK @ W_K.T
+        + dV @ W_V.T
+    )
+
+    return dW_Q, dW_K, dW_V, dW_O, dX_norm

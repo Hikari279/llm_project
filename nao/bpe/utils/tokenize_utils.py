@@ -1,18 +1,24 @@
 import json
 from pathlib import Path
 import re
+import sys
 
 from .basic_utils import text_to_byte, text_to_byte_token, merge_pair 
 
+# Import configuration
+nao_dir = Path(__file__).resolve().parents[2]
+if str(nao_dir) not in sys.path:
+    sys.path.insert(0, str(nao_dir))
+
+from config import VOCABULARY_PATH, MERGE_RULES_PATH
 
 
 # ========================== MAIN CODE ================================
 
 # TOKENIZE BPE
-data_dir = Path(__file__).resolve().parents[1] / "data"
-with (data_dir / "vocabulary.json").open("r", encoding="utf-8") as f:
+with VOCABULARY_PATH.open("r", encoding="utf-8") as f:
     vocabulary = json.load(f)
-with (data_dir / "merge_rules.json").open("r", encoding="utf-8") as f:
+with MERGE_RULES_PATH.open("r", encoding="utf-8") as f:
     merge_rules = json.load(f)
 
 
@@ -31,6 +37,7 @@ id_to_token = {
     idx: token
     for idx, token in enumerate(vocabulary)
 }
+
 
 
 # TOKENIZE TEXT [text] -> [[ids], [ids]]
@@ -102,3 +109,13 @@ def tokenize_text(text):
         IDS.append(ids)
 
     return IDS
+
+
+# HELPER
+def decode_token_ids(token_ids):
+    token_bytes = b"".join(
+        id_to_token[int(token_id)]
+        for token_id in token_ids
+    )
+
+    return token_bytes.decode("utf-8", errors="replace")

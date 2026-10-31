@@ -11,4 +11,18 @@ def layer_norm(X, gamma, beta):
     norm = diff / np.sqrt(variance + epsilon)
     Y_LN = gamma * norm + beta
 
-    return Y_LN
+    return norm, Y_LN, variance
+
+def layer_norm_backward(dY, norm, variance, gamma):
+    d_norm = dY * gamma
+
+    d = norm.shape[1]
+    inv_std = 1 / np.sqrt(variance + 1e-5)
+
+    dX = inv_std * (
+        d_norm
+        - np.mean(d_norm, axis=1, keepdims=True)
+        - norm * np.mean(d_norm * norm, axis=1, keepdims=True)
+    )
+
+    return dX
